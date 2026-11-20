@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Audit d'un dossier – Espace formation ACMB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="commun.js"></script>
+</head>
+<body>
+<header><div class="bar">
+  <a class="back" data-keep href="index.html">← Espace formation</a>
+  <div class="meta">Atelier audit</div>
+</div></header>
+<main><div class="sheet" id="app"></div></main>
+<script>
+const ITEMS = [
+  ["DER remis et signé", "Fiche client > Communication > Documents"],
+  ["Recueil des exigences et besoins daté et signé", "Devis > documents"],
+  ["Document de conseil motivé", "Devis > documents"],
+  ["Qualité d'intervention indiquée (agent général ou courtier)", "Dans le document de conseil"],
+  ["IPID, CG et proposition remis, avec preuve de remise", "Documents, ou Communication > Emails envoyés"],
+  ["Contrat signé et conditions particulières", "Contrat > documents"],
+  ["Pièce d'identité en cours de validité", "Fiche client > Communication > Documents"],
+  ["Professionnel : Kbis de moins de 3 mois et statuts", "Fiche client > Communication > Documents"],
+  ["Professionnel : bénéficiaires effectifs identifiés", "Documents ou onglet Associations"],
+  ["Vérification gel des avoirs faite", "Icône lunettes, résultat dans les notifications"],
+  ["Vérification Bloctel (si démarchage téléphonique)", "Liste des clients > export Bloctel"],
+  ["Profession, catégorie et nationalité dans les champs standards", "Fiche client > Identité > Informations personnelles"],
+  ["Consentements RGPD renseignés", "Fiche client > Identité > Préférences client"],
+  ["Aucune donnée de santé hors questionnaire de l'assureur", "Notes, documents et e-mails"],
+  ["Fichiers nommés AAAA-MM-JJ_TYPE_NOM", "Communication > Documents"],
+  ["Client inactif : archivage ou anonymisation tracés", "Fiche client > Évènements"]
+];
+const K = "acmb-audit";
+let S = ACMB.store.get(K) || { dossier: "", ok: {}, act: {}, prio: "", ech: "" };
+const app = document.getElementById("app"), esc = ACMB.esc;
+const save = () => ACMB.store.set(K, S);
+
+function render(){
+  app.innerHTML = `
+    <h1>Audit d'un dossier client</h1>
+    <p class="muted">Ouvrez un dossier récent dans Modulr et vérifiez chaque point. Cochez ce qui est présent ; pour ce qui manque, notez l'action à mener.</p>
+    <label class="f" for="dos">Dossier audité (initiales ou référence, pas de nom complet)</label>
+    <input class="t" id="dos" value="${esc(S.dossier)}" placeholder="Ex. : J.D. – devis auto 2026">
+    <div class="sum"><div><b id="nok">0</b>présents</div><div style="background:var(--red)"><b id="nko">16</b>manquants</div></div>
+    ${ITEMS.map(([t,w],i)=>`<div class="check ${S.ok[i]?"ok":""}" id="c${i}"><input type="checkbox" data-i="${i}" ${S.ok[i]?"checked":""} aria-label="${esc(t)}">
+      <div style="flex:1"><div style="font-weight:700">${esc(t)}</div><div class="w">${esc(w)}</div>
+      <input class="t act" data-a="${i}" placeholder="Action à mener" value="${esc(S.act[i]||"")}" style="font-size:15px;padding:9px 12px;margin-top:8px;${S.ok[i]?"display:none":""}"></div></div>`).join("")}
+    <h2>Bilan</h2>
+    <label class="f" for="prio">Actions prioritaires</label><textarea class="t" id="prio">${esc(S.prio)}</textarea>
+    <label class="f" for="ech">Échéance de régularisation</label><input class="t" id="ech" type="date" value="${esc(S.ech)}">
+    <div class="row" style="margin-top:18px"><button class="btn" id="cp">Copier mon bilan</button><button class="btn ghost" id="rz">Nouveau dossier</button></div>`;
+  counts();
+  document.getElementById("dos").oninput = e => { S.dossier = e.target.value; save(); };
+  app.querySelectorAll("input[type=checkbox]").forEach(cb => cb.onchange = () => {
+    const i = +cb.dataset.i; S.ok[i] = cb.checked; save();
+    document.getElementById("c"+i).classList.toggle("ok", cb.checked);
+    document.querySelector(`[data-a="${i}"]`).style.display = cb.checked ? "none" : ""; counts();
+  });
+  app.querySelectorAll("[data-a]").forEach(inp => inp.oninput = () => { S.act[+inp.dataset.a] = inp.value; save(); });
+  document.getElementById("prio").oninput = e => { S.prio = e.target.value; save(); };
+  document.getElementById("ech").oninput = e => { S.ech = e.target.value; save(); };
+  document.getElementById("cp").onclick = () => {
+    const miss = ITEMS.map((x,i)=>[x[0],i]).filter(([,i])=>!S.ok[i]);
+    ACMB.copy(`Audit du dossier ${S.dossier||"–"}\nPièces présentes : ${16-miss.length}/16\nManquants :\n` + (miss.length ? miss.map(([t,i])=>`- ${t}${S.act[i]?" → "+S.act[i]:""}`).join("\n") : "- aucun") + `\nActions prioritaires : ${S.prio||"–"}\nÉchéance : ${S.ech||"–"}`);
+  };
+  document.getElementById("rz").onclick = () => { S = { dossier: "", ok: {}, act: {}, prio: "", ech: "" }; save(); render(); };
+}
+function counts(){ const n = Object.values(S.ok).filter(Boolean).length; document.getElementById("nok").textContent = n; document.getElementById("nko").textContent = 16 - n; }
+render();
+</script>
+</body>
+</html>

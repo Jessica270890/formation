@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jeu de rôle – Espace formation ACMB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="commun.js"></script>
+</head>
+<body>
+<header><div class="bar">
+  <a class="back" data-keep href="index.html">← Espace formation</a>
+  <div class="meta">Atelier jeu de rôle</div>
+</div></header>
+<main><div class="sheet" id="app"></div></main>
+<script>
+const SC = [
+  { t: "Auto et habitation", who: "Particulier",
+    conseiller: "Mme Laurent, 34 ans, appelle pour assurer une voiture qu'elle vient d'acheter.",
+    client: ["Clio de 2023 achetée avec un crédit ; 18 000 km par an, dont des trajets pour le travail.",
+      "Votre compagnon conduit aussi la voiture ; il a eu un accident responsable il y a 2 ans.",
+      "Vous venez d'emménager dans une maison de 110 m² dont vous êtes propriétaire ; l'habitation est encore assurée ailleurs, échéance dans 2 mois.",
+      "Vous avez du matériel photo de valeur (environ 6 000 €).",
+      "Budget : « le moins cher possible », mais vous ne pourriez pas racheter de voiture en cas de vol."],
+    find: ["Le 2e conducteur et son sinistre", "L'usage professionnel du véhicule", "Le crédit en cours (valeur à neuf)", "L'habitation à reprendre à l'échéance", "Les objets de valeur", "La contradiction entre le budget et le besoin"] },
+  { t: "Prévoyance d'un indépendant", who: "Professionnel",
+    conseiller: "M. Bernard, 45 ans, plombier en entreprise individuelle, vient faire le point sur sa mutuelle.",
+    client: ["Marié, 2 enfants de 8 et 12 ans ; votre femme travaille à mi-temps.",
+      "Vous n'avez aucune prévoyance : si vous vous arrêtez, vous n'avez presque aucun revenu.",
+      "Vous remboursez le prêt de votre maison (900 € par mois, encore 14 ans).",
+      "Vous trouvez votre mutuelle trop chère pour ce qu'elle rembourse en dentaire.",
+      "Vous évoquez spontanément un problème de dos (le conseiller ne doit ni creuser ni le noter)."],
+    find: ["Le besoin réel : maintien de revenu en cas d'arrêt", "Les personnes à protéger", "Le prêt immobilier en cours", "Le poste dentaire", "Ne noter aucune information de santé"] },
+  { t: "RC professionnelle d'un artisan", who: "Professionnel",
+    conseiller: "La SARL Duval Menuiserie demande un devis de responsabilité civile, exigé par un nouveau client.",
+    client: ["6 salariés, 650 000 € de chiffre d'affaires ; fabrication et pose de menuiseries.",
+      "Depuis peu, l'entreprise pose aussi des charpentes (activité soumise à la garantie décennale).",
+      "Elle sous-traite une partie des poses.",
+      "L'atelier est loué, avec des machines d'une valeur de 150 000 €.",
+      "Le gérant détient 60 % des parts, son associé 40 %."],
+    find: ["La nouvelle activité de charpente (décennale obligatoire)", "La sous-traitance", "Les montants exigés par le donneur d'ordre", "La perte d'exploitation", "Les bénéficiaires effectifs : les deux associés détiennent plus de 25 %", "Le Kbis à demander"] }
+];
+const CRIT = ["Se présente et remet le DER", "Annonce sa qualité (agent général ou courtier)", "Explore la situation avant de parler produit",
+  "Pose surtout des questions ouvertes", "Fait émerger l'information cachée du scénario", "Demande les contrats déjà en place",
+  "Fixe les exigences (budget, franchise, date)", "Ne note aucune information de santé", "Reformule et fait valider",
+  "Annonce la suite (proposition écrite, date)", "Saisit le devis et génère le recueil dans Modulr"];
+const VAL = [["y","Oui"],["p","En partie"],["n","Non"]];
+const K = "acmb-jdr";
+let S = ACMB.store.get(K) || { sc: 0, grid: {}, ex: {}, plus: "", moins: "" };
+const app = document.getElementById("app"), esc = ACMB.esc;
+const save = () => ACMB.store.set(K, S);
+
+function render(){
+  const sc = SC[S.sc];
+  app.innerHTML = `
+    <h1>L'entretien de découverte</h1>
+    <p class="muted">En binôme : un conseiller, un client. 15 minutes d'entretien, puis on inverse les rôles avec un autre scénario. Le client ne donne une information de sa fiche que si on lui pose la bonne question.</p>
+    <h2>Choisissez le scénario</h2>
+    <div class="seg" id="seg">${SC.map((x,k)=>`<button class="${k===S.sc?"on":""}" data-k="${k}">${k+1}. ${esc(x.t)}</button>`).join("")}</div>
+
+    <div class="panel"><h3>Fiche conseiller</h3><p style="margin:0">${esc(sc.conseiller)}</p>
+      <p class="note">Suivez la fiche découverte client, puis créez le devis et générez le recueil dans Modulr (client test MATAELE).</p></div>
+
+    <div class="reveal" id="rc"><button class="btn ghost" id="bc">Je joue le client : afficher ma fiche</button></div>
+    <div class="reveal" id="rf"><button class="btn ghost" id="bf">Après l'entretien : ce qu'il fallait découvrir</button></div>
+
+    <h2>Grille d'observation</h2>
+    <p class="muted">L'observateur coche pendant l'entretien et note un exemple concret pour le débrief.</p>
+    <div class="sum"><div><b id="sy">0</b>oui</div><div style="background:var(--c);color:#2a1d05"><b id="sp">0</b>en partie</div><div style="background:var(--red)"><b id="sn">0</b>non</div></div>
+    ${CRIT.map((c,i)=>`<div class="crit"><div class="lbl">${esc(c)}</div>
+      <div class="pick" data-i="${i}">${VAL.map(([v,l])=>`<button class="${v} ${S.grid[i]===v?"on":""}" data-v="${v}">${l}</button>`).join("")}</div>
+      <input class="t" data-ex="${i}" placeholder="Exemple observé (facultatif)" value="${esc(S.ex[i]||"")}"></div>`).join("")}
+    <label class="f" for="plus">Un point fort</label><textarea class="t" id="plus">${esc(S.plus)}</textarea>
+    <label class="f" for="moins">Un point à améliorer</label><textarea class="t" id="moins">${esc(S.moins)}</textarea>
+    <div class="row" style="margin-top:18px"><button class="btn" id="cp">Copier ma grille</button><button class="btn ghost" id="rz">Nouvelle grille</button></div>`;
+  counts();
+  app.querySelectorAll("#seg button").forEach(b => b.onclick = () => { S.sc = +b.dataset.k; save(); render(); });
+  document.getElementById("bc").onclick = () => { document.getElementById("rc").innerHTML = `<h3 class="disp" style="margin:0 0 8px">Fiche client – ${esc(sc.who)}</h3><ul>${sc.client.map(x=>`<li>${esc(x)}</li>`).join("")}</ul><p class="note">À ne pas montrer au conseiller.</p>`; };
+  document.getElementById("bf").onclick = () => { document.getElementById("rf").innerHTML = `<h3 class="disp" style="margin:0 0 8px">Ce qu'il fallait découvrir</h3><ul>${sc.find.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`; };
+  app.querySelectorAll(".pick").forEach(p => p.querySelectorAll("button").forEach(b => b.onclick = () => {
+    const i = +p.dataset.i; S.grid[i] = S.grid[i] === b.dataset.v ? undefined : b.dataset.v; save();
+    p.querySelectorAll("button").forEach(x => x.classList.toggle("on", x.dataset.v === S.grid[i])); counts();
+  }));
+  app.querySelectorAll("[data-ex]").forEach(inp => inp.oninput = () => { S.ex[+inp.dataset.ex] = inp.value; save(); });
+  document.getElementById("plus").oninput = e => { S.plus = e.target.value; save(); };
+  document.getElementById("moins").oninput = e => { S.moins = e.target.value; save(); };
+  document.getElementById("cp").onclick = () => {
+    const lab = { y: "Oui", p: "En partie", n: "Non" };
+    ACMB.copy(`Grille d'observation – scénario ${S.sc+1} (${sc.t})\n` + CRIT.map((c,i)=>`- ${c} : ${lab[S.grid[i]]||"–"}${S.ex[i]?" ("+S.ex[i]+")":""}`).join("\n") + `\nPoint fort : ${S.plus||"–"}\nPoint à améliorer : ${S.moins||"–"}`);
+  };
+  document.getElementById("rz").onclick = () => { S = { sc: S.sc, grid: {}, ex: {}, plus: "", moins: "" }; save(); render(); };
+}
+function counts(){
+  const v = Object.values(S.grid);
+  document.getElementById("sy").textContent = v.filter(x=>x==="y").length;
+  document.getElementById("sp").textContent = v.filter(x=>x==="p").length;
+  document.getElementById("sn").textContent = v.filter(x=>x==="n").length;
+}
+render();
+</script>
+</body>
+</html>

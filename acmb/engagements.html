@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mes engagements – Espace formation ACMB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="commun.js"></script>
+</head>
+<body>
+<header><div class="bar">
+  <a class="back" data-keep href="index.html">← Espace formation</a>
+  <div class="meta">Mes engagements</div>
+</div></header>
+<main><div class="sheet" id="app"></div></main>
+<script>
+const K = "acmb-eng";
+let S = ACMB.store.get(K) || { name: "", r: [{},{},{}] };
+const app = document.getElementById("app"), esc = ACMB.esc;
+const save = () => ACMB.store.set(K, S);
+const IDEAS = ["Générer le recueil des besoins depuis le devis pour chaque nouveau client", "Nommer chaque pièce AAAA-MM-JJ_TYPE_NOM", "Lancer la vérification gel des avoirs à chaque entrée en relation", "Remettre le DER dès le premier contact, par e-mail depuis Modulr"];
+
+function render(){
+  app.innerHTML = `
+    <h1>Mes engagements</h1>
+    <p class="muted">Trois actions que je mets en place dès la semaine prochaine, et comment je saurai que c'est fait. Elles seront reprises dans le questionnaire à 3 mois.</p>
+    <label class="f" for="nm">Mon prénom</label><input class="t" id="nm" value="${esc(S.name)}">
+    ${S.r.map((r,i)=>`<div class="eng"><div class="n">${i+1}</div>
+      <label class="f" for="a${i}">Action</label><input class="t" id="a${i}" data-i="${i}" data-f="a" list="ideas" value="${esc(r.a||"")}">
+      <label class="f" for="p${i}">Dans Modulr, cela se voit par…</label><input class="t" id="p${i}" data-i="${i}" data-f="p" value="${esc(r.p||"")}">
+      <label class="f" for="d${i}">D'ici le</label><input class="t" id="d${i}" data-i="${i}" data-f="d" type="date" value="${esc(r.d||"")}"></div>`).join("")}
+    <datalist id="ideas">${IDEAS.map(x=>`<option value="${esc(x)}">`).join("")}</datalist>
+    <div class="row" style="margin-top:18px"><button class="btn" id="cp">Copier mes engagements</button></div>`;
+  document.getElementById("nm").oninput = e => { S.name = e.target.value; save(); };
+  app.querySelectorAll("[data-f]").forEach(inp => inp.oninput = () => { S.r[+inp.dataset.i][inp.dataset.f] = inp.value; save(); });
+  document.getElementById("cp").onclick = () => ACMB.copy(`Mes engagements – ${S.name||"–"}\n` + S.r.map((r,i)=>`${i+1}. ${r.a||"–"} (dans Modulr : ${r.p||"–"}) d'ici le ${r.d ? new Date(r.d).toLocaleDateString("fr-FR") : "–"}`).join("\n"));
+}
+render();
+</script>
+</body>
+</html>
