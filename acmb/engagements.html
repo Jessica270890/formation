@@ -20,7 +20,7 @@ const K = "acmb-eng";
 let S = ACMB.store.get(K) || { name: "", r: [{},{},{}] };
 const app = document.getElementById("app"), esc = ACMB.esc;
 const save = () => ACMB.store.set(K, S);
-const IDEAS = ["Remettre le DER dès le premier contact", "Faire signer un recueil des besoins à chaque nouveau client", "Motiver chaque proposition dans un document de conseil", "Nommer chaque pièce AAAA-MM-JJ_TYPE_NOM", "Vérifier le gel des avoirs à chaque entrée en relation"];
+const IDEAS = ["Créer un devis dans Modulr pour chaque nouvelle demande", "Générer le recueil des besoins depuis le devis dans Modulr", "Remettre le DER dès le premier contact", "Faire signer un recueil des besoins à chaque nouveau client", "Motiver chaque proposition dans un document de conseil", "Nommer chaque pièce AAAA-MM-JJ_TYPE_NOM", "Vérifier le gel des avoirs à chaque entrée en relation"];
 
 function render(){
   app.innerHTML = `
