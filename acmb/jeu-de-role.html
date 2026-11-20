@@ -45,7 +45,7 @@ const SC = [
 const CRIT = ["Se présente et remet le DER", "Annonce sa qualité (agent général ou courtier)", "Explore la situation avant de parler produit",
   "Pose surtout des questions ouvertes", "Fait émerger l'information cachée du scénario", "Demande les contrats déjà en place",
   "Fixe les exigences (budget, franchise, date)", "Ne note aucune information de santé", "Reformule et fait valider",
-  "Annonce la suite (proposition écrite, date)", "Saisit le devis et génère le recueil dans Modulr"];
+  "Annonce la suite (proposition écrite, date)", "Remplit le recueil des besoins et le fait signer"];
 const VAL = [["y","Oui"],["p","En partie"],["n","Non"]];
 const K = "acmb-jdr";
 let S = ACMB.store.get(K) || { sc: 0, grid: {}, ex: {}, plus: "", moins: "" };
@@ -61,7 +61,7 @@ function render(){
     <div class="seg" id="seg">${SC.map((x,k)=>`<button class="${k===S.sc?"on":""}" data-k="${k}">${k+1}. ${esc(x.t)}</button>`).join("")}</div>
 
     <div class="panel"><h3>Fiche conseiller</h3><p style="margin:0">${esc(sc.conseiller)}</p>
-      <p class="note">Suivez la fiche découverte client, puis créez le devis et générez le recueil dans Modulr (client test MATAELE).</p></div>
+      <p class="note">Suivez la fiche découverte client et remplissez le recueil des besoins pendant l'entretien.</p></div>
 
     <div class="reveal" id="rc"><button class="btn ghost" id="bc">Je joue le client : afficher ma fiche</button></div>
     <div class="reveal" id="rf"><button class="btn ghost" id="bf">Après l'entretien : ce qu'il fallait découvrir</button></div>

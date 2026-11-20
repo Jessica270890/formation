@@ -20,7 +20,7 @@ const K = "acmb-eng";
 let S = ACMB.store.get(K) || { name: "", r: [{},{},{}] };
 const app = document.getElementById("app"), esc = ACMB.esc;
 const save = () => ACMB.store.set(K, S);
-const IDEAS = ["Générer le recueil des besoins depuis le devis pour chaque nouveau client", "Nommer chaque pièce AAAA-MM-JJ_TYPE_NOM", "Lancer la vérification gel des avoirs à chaque entrée en relation", "Remettre le DER dès le premier contact, par e-mail depuis Modulr"];
+const IDEAS = ["Remettre le DER dès le premier contact", "Faire signer un recueil des besoins à chaque nouveau client", "Motiver chaque proposition dans un document de conseil", "Nommer chaque pièce AAAA-MM-JJ_TYPE_NOM", "Vérifier le gel des avoirs à chaque entrée en relation"];
 
 function render(){
   app.innerHTML = `
@@ -29,13 +29,13 @@ function render(){
     <label class="f" for="nm">Mon prénom</label><input class="t" id="nm" value="${esc(S.name)}">
     ${S.r.map((r,i)=>`<div class="eng"><div class="n">${i+1}</div>
       <label class="f" for="a${i}">Action</label><input class="t" id="a${i}" data-i="${i}" data-f="a" list="ideas" value="${esc(r.a||"")}">
-      <label class="f" for="p${i}">Dans Modulr, cela se voit par…</label><input class="t" id="p${i}" data-i="${i}" data-f="p" value="${esc(r.p||"")}">
+      <label class="f" for="p${i}">Je saurai que c'est fait quand…</label><input class="t" id="p${i}" data-i="${i}" data-f="p" value="${esc(r.p||"")}">
       <label class="f" for="d${i}">D'ici le</label><input class="t" id="d${i}" data-i="${i}" data-f="d" type="date" value="${esc(r.d||"")}"></div>`).join("")}
     <datalist id="ideas">${IDEAS.map(x=>`<option value="${esc(x)}">`).join("")}</datalist>
     <div class="row" style="margin-top:18px"><button class="btn" id="cp">Copier mes engagements</button></div>`;
   document.getElementById("nm").oninput = e => { S.name = e.target.value; save(); };
   app.querySelectorAll("[data-f]").forEach(inp => inp.oninput = () => { S.r[+inp.dataset.i][inp.dataset.f] = inp.value; save(); });
-  document.getElementById("cp").onclick = () => ACMB.copy(`Mes engagements – ${S.name||"–"}\n` + S.r.map((r,i)=>`${i+1}. ${r.a||"–"} (dans Modulr : ${r.p||"–"}) d'ici le ${r.d ? new Date(r.d).toLocaleDateString("fr-FR") : "–"}`).join("\n"));
+  document.getElementById("cp").onclick = () => ACMB.copy(`Mes engagements – ${S.name||"–"}\n` + S.r.map((r,i)=>`${i+1}. ${r.a||"–"} (preuve : ${r.p||"–"}) d'ici le ${r.d ? new Date(r.d).toLocaleDateString("fr-FR") : "–"}`).join("\n"));
 }
 render();
 </script>

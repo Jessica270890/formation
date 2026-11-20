@@ -2445,13 +2445,13 @@ const Q = [
  {q:"Le document de conseil doit être remis :",o:["Avant la signature du contrat","Après la signature","Seulement si le client le demande"],a:0,e:"Le conseil est toujours remis avant la signature, avec l'IPID."},
  {q:"Quelle information ne doit jamais figurer dans le recueil des besoins ?",o:["La profession","L'état de santé","Le budget"],a:1,e:"Aucune information de santé : le questionnaire médical part directement à l'assureur."},
  {q:"Pour un client professionnel, il faut identifier :",o:["Ses bénéficiaires effectifs","Ses fournisseurs","Ses concurrents"],a:0,e:"Les personnes qui détiennent plus de 25 % de la société ou qui la contrôlent."},
- {q:"Dans Modulr, la vérification du gel des avoirs :",o:["Se lance avec l'icône lunettes de la fiche client","N'existe pas","Se fait par e-mail à la compagnie"],a:0,e:"Icône lunettes, puis validation : le résultat arrive dans les notifications."},
+ {q:"Vérifier le gel des avoirs d'un client, c'est :",o:["Vérifier qu'il ne figure pas au registre national des gels","Vérifier sa solvabilité","Bloquer son compte bancaire"],a:0,e:"On consulte le registre national des gels (DG Trésor) à l'entrée en relation et avant une souscription, et on garde une trace."},
  {q:"La formation continue obligatoire d'un distributeur d'assurance est d'au moins :",o:["7 heures par an","15 heures par an","15 heures tous les 3 ans"],a:1,e:"Au moins 15 heures par an. Cette journée en compte 7."},
  {q:"Quel nom de fichier respecte la convention du cabinet ?",o:["Scan001.pdf","Dossier complet.pdf","2026-11-19_RECUEIL_DUPONT.pdf"],a:2,e:"Convention ACMB : AAAA-MM-JJ_TYPE_NOM. Une pièce = un fichier."},
  {q:"Une réclamation client doit recevoir une réponse :",o:["Sous 2 mois maximum, après un accusé de réception sous 10 jours ouvrables","Sous 6 mois","Il n'y a pas de délai"],a:0,e:"Accusé de réception sous 10 jours ouvrables, réponse sous 2 mois maximum."},
- {q:"Dans Modulr, le recueil des besoins se génère depuis :",o:["Le menu d'actions du devis, « Générer un document »","La comptabilité","La liste des compagnies"],a:0,e:"Devis > menu d'actions > Générer un document > Recueil des besoins ACMB."},
- {q:"Pour transformer un devis en contrat, il faut :",o:["Au moins une compagnie sélectionnée dans le devis","Un sinistre ouvert","Une quittance payée"],a:0,e:"Sans compagnie dans le devis, la transformation en contrat est impossible."},
- {q:"Le bouton « Documents attendus » est rouge. Cela signifie :",o:["Des pièces manquent encore","Le dossier est complet","Aucune pièce n'est attendue"],a:0,e:"Rouge : pièces manquantes. Vert : dossier complet."},
+ {q:"Le recueil des exigences et besoins doit être :",o:["Daté, signé et conservé dans le dossier client","Simplement oral","Envoyé à la compagnie, sans copie au cabinet"],a:0,e:"Daté, signé et conservé : c'est la preuve du devoir de conseil en cas de contrôle ou de litige."},
+ {q:"Après la fin de la relation, le dossier client se conserve au moins :",o:["5 ans","1 an","Il n'y a pas d'obligation"],a:0,e:"Au moins 5 ans après la fin de la relation, notamment pour les pièces de connaissance client (LCB-FT)."},
+ {q:"Un dossier client complet contient :",o:["DER, recueil, document de conseil, IPID et pièce d'identité","Seulement le contrat signé","Seulement le devis"],a:0,e:"Chaque étape laisse une pièce datée : DER, recueil, conseil et IPID, contrat, pièces d'identité."},
  {q:"Laquelle est une question ouverte ?",o:["« Vous roulez beaucoup ? »","« Comment utilisez-vous votre véhicule au quotidien ? »","« Vous avez un garage ? »"],a:1,e:"Une question ouverte laisse le client raconter : on découvre ce qu'on n'aurait pas pensé à demander."},
  {q:"Un client paie une grosse somme en espèces et refuse de dire d'où elle vient. Le conseiller :",o:["Prévient le client qu'il va le signaler","Alerte le dirigeant du cabinet, sans prévenir le client","Accepte, ce n'est pas son rôle"],a:1,e:"On alerte le dirigeant du cabinet, sans jamais prévenir le client."}
 ];
@@ -2522,7 +2522,7 @@ let P = null;
 function player(mode){
   meta.textContent = label(mode);
   const done = store.get("acmb-quiz-" + mode);
-  if (done && done.finished) return result(done);
+  if (done && done.finished && (done.session || "") === URL_SESSION) return result(done);
   P = { mode, name: "", i: 0, score: 0, start: 0, answered: false, session: URL_SESSION, pid: Math.random().toString(36).slice(2, 10) };
   app.innerHTML = `
     <h1>${label(mode)}</h1>
@@ -2565,7 +2565,7 @@ function answer(k){
   document.getElementById("nx").onclick = () => {
     if (last) {
       const secs = Math.round((Date.now() - P.start) / 1000);
-      const r = { finished: true, mode: P.mode, name: P.name, score: P.score, total: list.length, secs, code: code(P.name, P.mode, P.score, secs) };
+      const r = { finished: true, session: P.session || "", mode: P.mode, name: P.name, score: P.score, total: list.length, secs, code: code(P.name, P.mode, P.score, secs) };
       store.set("acmb-quiz-" + P.mode, r);
       state({ q: list.length, done: true, secs, code: r.code });
       result(r);
@@ -2630,10 +2630,13 @@ function animateur(){
       <div class="qr e"><b>Espace formation ACMB</b><span>Scannez avec l'appareil photo de votre portable</span><br><div class="box" id="qr1"></div></div>
       <div class="qr s" style="text-align:left;display:flex;flex-direction:column;justify-content:center;gap:10px">
         <b>Tout est dans l'espace</b>
-        <span>▲ Quiz d'entrée, le matin</span><span>◆ Quiz de sortie, en fin de journée</span><span>● Jeu de rôle et grille d'observation</span><span>✓ Audit d'un dossier client</span><span>★ Mes engagements</span>
+        <span>▲ Quiz d'entrée, le matin</span><span>◆ Quiz de sortie, en fin de journée</span><span>● Jeu de rôle et grille d'observation</span><span>★ Mes engagements</span>
       </div>
     </div>
-    <p class="note" style="margin-top:18px">Session <b>${A.session}</b>. Pour une nouvelle formation, <a href="#" id="ns">démarrez une nouvelle session</a> : le suivi repart à zéro.</p>
+    <div class="row" style="margin-top:18px;justify-content:space-between">
+      <p class="note" style="margin:0">Session <b>${A.session}</b>. Réinitialiser crée un nouveau QR code : les participants le rescannent et repartent de zéro.</p>
+      <button class="btn ghost" id="ns">Réinitialiser les quiz</button>
+    </div>
 
     <h2>Suivi en direct</h2>
     <div class="row" style="justify-content:space-between">
@@ -2653,7 +2656,12 @@ function animateur(){
     </details>
     <div id="hist"></div>`;
   drawQR(); renderLive();
-  document.getElementById("ns").onclick = ev => { ev.preventDefault(); A.session = newCode(); store.set("acmb-quiz-session", A.session); store.set("acmb-session", A.session); A.live = {}; connect(); animateur(); };
+  const ns = document.getElementById("ns");
+  ns.onclick = () => {
+    if (!ns.dataset.armed) { ns.dataset.armed = "1"; ns.textContent = "Confirmer : tout effacer"; ns.classList.remove("ghost"); setTimeout(() => { if (ns.isConnected) { delete ns.dataset.armed; ns.textContent = "Réinitialiser les quiz"; ns.classList.add("ghost"); } }, 4000); return; }
+    A.session = newCode(); store.set("acmb-quiz-session", A.session); store.set("acmb-session", A.session);
+    A.live = {}; A.rows = []; connect(); animateur();
+  };
   document.getElementById("lkb").onclick = () => { A.link = document.getElementById("lk").value.trim() || DEFAULT_LINK; store.set("acmb-quiz-link", A.link); drawQR(); };
   document.getElementById("me").onclick = () => { A.mode = "entree"; animateur(); };
   document.getElementById("ms").onclick = () => { A.mode = "sortie"; animateur(); };
