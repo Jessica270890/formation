@@ -2439,21 +2439,26 @@ var qrcode = function() {
 
 <script>
 const Q = [
- {q:"Le recueil des exigences et besoins du client est obligatoire :",o:["Seulement en assurance vie","Avant toute souscription, quelle que soit la branche","Seulement si le client le demande"],a:1,e:"Le recueil des exigences et besoins est obligatoire avant toute souscription, quelle que soit la branche."},
- {q:"Le document d'entrée en relation (DER) se remet :",o:["À la signature du contrat","Dès le premier contact, avant toute proposition","Une fois par an"],a:1,e:"Le DER se remet dès le premier contact, avant toute proposition."},
- {q:"ACMB est agent général et courtier. Pour chaque proposition, le client doit savoir :",o:["Rien de particulier","À quel titre le cabinet intervient","Seulement le nom de l'assureur"],a:1,e:"Le document de conseil indique si le cabinet agit comme agent général ou comme courtier."},
- {q:"Le document de conseil doit être remis :",o:["Avant la signature du contrat","Après la signature","Seulement si le client le demande"],a:0,e:"Le conseil est toujours remis avant la signature, avec l'IPID."},
- {q:"Quelle information ne doit jamais figurer dans le recueil des besoins ?",o:["La profession","L'état de santé","Le budget"],a:1,e:"Aucune information de santé : le questionnaire médical part directement à l'assureur."},
- {q:"Pour un client professionnel, il faut identifier :",o:["Ses bénéficiaires effectifs","Ses fournisseurs","Ses concurrents"],a:0,e:"Les personnes qui détiennent plus de 25 % de la société ou qui la contrôlent."},
- {q:"Vérifier le gel des avoirs d'un client, c'est :",o:["Vérifier qu'il ne figure pas au registre national des gels","Vérifier sa solvabilité","Bloquer son compte bancaire"],a:0,e:"On consulte le registre national des gels (DG Trésor) à l'entrée en relation et avant une souscription, et on garde une trace."},
- {q:"La formation continue obligatoire d'un distributeur d'assurance est d'au moins :",o:["7 heures par an","15 heures par an","15 heures tous les 3 ans"],a:1,e:"Au moins 15 heures par an. Cette journée en compte 7."},
- {q:"Quel nom de fichier respecte la convention du cabinet ?",o:["Scan001.pdf","Dossier complet.pdf","2026-11-19_RECUEIL_DUPONT.pdf"],a:2,e:"Convention ACMB : AAAA-MM-JJ_TYPE_NOM. Une pièce = un fichier."},
- {q:"Une réclamation client doit recevoir une réponse :",o:["Sous 2 mois maximum, après un accusé de réception sous 10 jours ouvrables","Sous 6 mois","Il n'y a pas de délai"],a:0,e:"Accusé de réception sous 10 jours ouvrables, réponse sous 2 mois maximum."},
- {q:"Le recueil des exigences et besoins doit être :",o:["Daté, signé et conservé dans le dossier client","Simplement oral","Envoyé à la compagnie, sans copie au cabinet"],a:0,e:"Daté, signé et conservé : c'est la preuve du devoir de conseil en cas de contrôle ou de litige."},
- {q:"Après la fin de la relation, le dossier client se conserve au moins :",o:["5 ans","1 an","Il n'y a pas d'obligation"],a:0,e:"Au moins 5 ans après la fin de la relation, notamment pour les pièces de connaissance client (LCB-FT)."},
- {q:"Un dossier client complet contient :",o:["DER, recueil, document de conseil, IPID et pièce d'identité","Seulement le contrat signé","Seulement le devis"],a:0,e:"Chaque étape laisse une pièce datée : DER, recueil, conseil et IPID, contrat, pièces d'identité."},
- {q:"Laquelle est une question ouverte ?",o:["« Vous roulez beaucoup ? »","« Comment utilisez-vous votre véhicule au quotidien ? »","« Vous avez un garage ? »"],a:1,e:"Une question ouverte laisse le client raconter : on découvre ce qu'on n'aurait pas pensé à demander."},
- {q:"Un client paie une grosse somme en espèces et refuse de dire d'où elle vient. Le conseiller :",o:["Prévient le client qu'il va le signaler","Alerte le dirigeant du cabinet, sans prévenir le client","Accepte, ce n'est pas son rôle"],a:1,e:"On alerte le dirigeant du cabinet, sans jamais prévenir le client."}
+ {q: "Le recueil des exigences et besoins du client est obligatoire :", "o": ["Seulement en assurance vie", "Avant toute souscription, quelle que soit la branche", "Seulement si le client le demande"], "a": 1, "e": "Il est obligatoire avant toute souscription, quelle que soit la branche, et se fait daté et signé."},
+ {q: "Le document d'entrée en relation (DER) se remet :", "o": ["Dès le premier contact, avant toute proposition", "À la signature du contrat", "Une fois par an"], "a": 0, "e": "Le DER se remet dès le premier contact, avant toute proposition."},
+ {q: "ACMB est agent général et courtier. Pour chaque proposition, le client doit savoir :", "o": ["Seulement le nom de l'assureur", "Rien de particulier", "À quel titre le cabinet intervient"], "a": 2, "e": "Le DER et le document de conseil indiquent si le cabinet agit comme agent général ou comme courtier."},
+ {q: "Le document de conseil et l'IPID sont remis :", "o": ["Après la signature", "Avant la signature du contrat", "Seulement si le client le demande"], "a": 1, "e": "Toujours avant la signature : le client doit pouvoir comparer et décider en connaissance de cause."},
+ {q: "Quelle information ne doit jamais figurer dans le recueil des besoins ?", "o": ["L'état de santé", "La profession", "Le budget"], "a": 0, "e": "Aucune information de santé : le questionnaire médical part directement à l'assureur."},
+ {q: "Pour un client professionnel, le contrôle du gel des avoirs porte sur :", "o": ["La société seulement", "La société, ses dirigeants et ses bénéficiaires effectifs", "Personne : c'est le rôle de la banque"], "a": 1, "e": "On vérifie la société, ses dirigeants et ses bénéficiaires effectifs, à l'entrée en relation et avant chaque souscription."},
+ {q: "Un client vous annonce la naissance de son enfant. Quels domaines revoir ?", "o": ["Aucun, ça ne change rien", "Seulement l'auto", "Santé, prévoyance, accidents de la vie, épargne"], "a": 2, "e": "Un événement de vie est presque toujours un besoin : on ajoute l'enfant à la santé et on repère les besoins de prévoyance et d'épargne."},
+ {q: "Un client appelle uniquement pour assurer sa nouvelle voiture. Le bon réflexe :", "o": ["Profiter de l'échange pour faire le tour de ses autres besoins", "Traiter l'auto et raccrocher", "Lui proposer tous les produits du cabinet"], "a": 0, "e": "On traite sa demande, puis on fait le tour des domaines : c'est là qu'on découvre les besoins non couverts."},
+ {q: "Un client dit : « J'ai de l'argent qui dort sur mon livret. » Le conseiller :", "o": ["Lui conseille une assurance vie et un support", "Ne relève pas, ce n'est pas son rôle", "Note le besoin et passe la main à un dirigeant d'ACMB"], "a": 2, "e": "Les conseillers ne conseillent pas l'assurance vie : ils détectent le besoin et le transmettent à un dirigeant d'ACMB."},
+ {q: "La formation continue obligatoire d'un distributeur d'assurance est d'au moins :", "o": ["7 heures par an", "15 heures par an", "15 heures tous les 3 ans"], "a": 1, "e": "Au moins 15 heures par an. Cette journée en compte 7."},
+ {q: "Le contrôle du gel des avoirs fait ressortir un nom identique à celui du client. Que faire ?", "o": ["Prévenir le client tout de suite", "Ne rien dire au client, comparer la date de naissance et alerter le responsable", "Résilier ses contrats"], "a": 1, "e": "Un homonyme est fréquent : on compare la date de naissance, on ne fait rien avec le client et on alerte le responsable."},
+ {q: "Un artisan à son compte n'a aucune indemnité en cas d'arrêt de travail. Le conseiller :", "o": ["Obtient son accord pour être rappelé et transmet le besoin à un dirigeant d'ACMB", "Lui fait remplir un questionnaire de santé", "Lui fait souscrire une prévoyance"], "a": 0, "e": "La prévoyance individuelle est conseillée par un dirigeant d'ACMB : le conseiller détecte, note et passe la main."},
+ {q: "Quand on transmet un besoin au dirigeant d'ACMB, on ne transmet jamais :", "o": ["L'objectif exprimé par le client", "Des informations sur sa santé", "Ses disponibilités pour être rappelé"], "a": 1, "e": "Aucune information de santé : c'est le dirigeant qui fera remplir le questionnaire médical."},
+ {q: "La gérante d'une SARL vient assurer sa maison. Quelle fiche de rendez-vous utiliser ?", "o": ["La fiche Particulier, puisqu'il s'agit de sa maison", "Aucune, c'est une demande simple", "La fiche Dirigeant, qui couvre sa vie perso et son entreprise"], "a": 2, "e": "Un dirigeant a aussi des contrats de particulier : la fiche Dirigeant fait le tour des deux."},
+ {q: "Dans Modulr, le recueil des besoins se génère :", "o": ["Depuis le devis, avec « Générer un document »", "Dans Word, puis on l'envoie par e-mail", "Il ne se génère pas, on le fait à la main"], "a": 0, "e": "Depuis le devis : Générer un document, modèle Recueil des besoins ACMB. Il se range automatiquement dans le dossier."},
+ {q: "Quel nom de fichier respecte la convention du cabinet ?", "o": ["Scan001.pdf", "Dossier complet.pdf", "2026-11-19_RECUEIL_DUPONT.pdf"], "a": 2, "e": "Convention ACMB : AAAA-MM-JJ_TYPE_NOM. Une pièce = un fichier."},
+ {q: "Une réclamation client doit recevoir une réponse :", "o": ["Sous 6 mois", "Sous 2 mois maximum, après un accusé de réception sous 10 jours ouvrables", "Il n'y a pas de délai"], "a": 1, "e": "Accusé de réception sous 10 jours ouvrables, réponse sous 2 mois maximum."},
+ {q: "Laquelle est une question ouverte ?", "o": ["« Comment utilisez-vous votre véhicule au quotidien ? »", "« Vous roulez beaucoup ? »", "« Vous avez un garage ? »"], "a": 0, "e": "Une question ouverte laisse le client raconter : on découvre ce qu'on n'aurait pas pensé à demander."},
+ {q: "Les bénéficiaires effectifs d'une société sont les personnes qui :", "o": ["Travaillent dans la société", "Sont clientes de la société", "Détiennent plus de 25 % du capital ou des droits de vote, ou la contrôlent"], "a": 2, "e": "Au-delà de 25 % du capital ou des droits de vote, ou par un contrôle de fait : on les identifie et on contrôle le gel des avoirs."},
+ {q: "Un client paie une grosse somme en espèces et refuse de dire d'où elle vient. Le conseiller :", "o": ["Prévient le client qu'il va le signaler", "Alerte le dirigeant du cabinet, sans prévenir le client", "Accepte, ce n'est pas son rôle"], "a": 1, "e": "On alerte le dirigeant du cabinet, sans jamais prévenir le client."}
 ];
 const L = ["A","B","C"];
 const SELF_HOSTED = /^https?:$/.test(location.protocol) && !/claude/i.test(location.hostname);
@@ -2461,7 +2466,7 @@ const DEFAULT_LINK = SELF_HOSTED ? location.origin + location.pathname : "https:
 const app = document.getElementById("app"), meta = document.getElementById("meta");
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const label = m => m === "entree" ? "Quiz d'entrée" : "Quiz de sortie";
-const count = m => m === "entree" ? 10 : 15;
+const count = m => m === "entree" ? 10 : 20;
 const fmt = s => Math.floor(s/60) + " min " + String(s%60).padStart(2,"0") + " s";
 const norm = s => s.trim().toUpperCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
 // short verification code tied to name + quiz + score + time
@@ -2509,7 +2514,7 @@ function home(){
     <p class="muted">Formation « Découverte client et dossier client conforme » – ACMB Assurances</p>
     <div class="choice">
       <button class="tile t1" id="h1"><span class="ico">▲</span><span><b>Quiz d'entrée</b><span>10 questions, le matin</span></span></button>
-      <button class="tile t2" id="h2"><span class="ico">◆</span><span><b>Quiz de sortie</b><span>15 questions, en fin de journée</span></span></button>
+      <button class="tile t2" id="h2"><span class="ico">◆</span><span><b>Quiz de sortie</b><span>20 questions, en fin de journée</span></span></button>
       <button class="tile t3" id="h3"><span class="ico">●</span><span><b>Écran formatrice</b><span>QR codes, suivi en direct et podium</span></span></button>
     </div>`;
   document.getElementById("h1").onclick = () => location.hash = "entree";
